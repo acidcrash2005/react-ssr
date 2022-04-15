@@ -13,7 +13,7 @@ const clientConfig = {
   target: 'web',
   mode: 'production',
   entry: {
-    client: './src/client/index.tsx',
+    client: ['@babel/polyfill','./src/client/index.tsx'],
   },
   devtool: false,
   resolve: {

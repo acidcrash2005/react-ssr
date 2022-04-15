@@ -1,18 +1,28 @@
 import React, {StrictMode} from "react";
 import { renderToPipeableStream } from "react-dom/server";
 import { StaticRouter } from "react-router-dom/server";
+import path from "path";
 import express from "express";
 import App from "../client/App/App";
 import { ServerStyleSheet } from "styled-components";
 import Html from "./html/html";
+import { ChunkExtractor } from "@loadable/server";
 
 export default async (req: express.Request,res: express.Response) => {
   const sheet = new ServerStyleSheet();
 
   const styles = sheet.getStyleTags();
 
+  const loadableJson = path.resolve(__dirname, "./loadable-stats.json");
 
-  const {pipe, abort} = renderToPipeableStream(
+    const extractor = new ChunkExtractor({
+        statsFile: loadableJson,
+        entrypoints: ["client"],
+    });
+
+  const bootstrapModules = extractor.getMainAssets('script').map(({url}) =>url );
+
+  const {pipe} = renderToPipeableStream(
       <Html styles={styles} children={sheet.collectStyles(
           <StrictMode>
               <StaticRouter location={req.url}>
@@ -32,7 +42,7 @@ export default async (req: express.Request,res: express.Response) => {
               '<!doctype html><p>Loading...</p>'
           );
         },
-          bootstrapModules: ['client/vendor.js','client/client.js'],
+        bootstrapModules,
       }
   );
 };

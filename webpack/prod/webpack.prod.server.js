@@ -12,7 +12,7 @@ const serverConfig = {
   mode: 'production',
   name: 'server',
   entry: {
-    server: './src/server/index.tsx',
+    server: ['@babel/polyfill','./src/server/index.tsx'],
   },
   resolve: {
     ...baseConfig.resolve,
