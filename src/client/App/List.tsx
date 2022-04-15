@@ -1,4 +1,5 @@
 import React from "react";
+import fetch from 'node-fetch';
 
 interface Data {
     title:string,
@@ -21,4 +22,9 @@ const List:React.FC<Props> = ({data}) => {
     </ul>
 }
 
-export default List;
+export default React.lazy(() => new Promise(async (resolve) => {
+    const response = await fetch('https://swapi.dev/api/films');
+    const data = await response.json();
+
+    resolve({default: () => <List data={data} />});
+}));
