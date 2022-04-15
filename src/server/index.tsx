@@ -30,9 +30,9 @@ if (process.env.NODE_ENV === "development") {
 app.use(compression());
 app.use(express.static("dist"));
 
-app.get("*", (req: express.Request, res: express.Response) => {
+app.get("*", async (req: express.Request, res: express.Response) => {
   try {
-    res.send(renderer(req));
+    await renderer(req,res);
   } catch (err) {
     console.log("error in rendering server side:", err);
   }

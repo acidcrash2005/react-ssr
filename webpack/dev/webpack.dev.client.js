@@ -12,7 +12,7 @@ const clientConfig = {
   target: 'web',
   mode: 'development',
   entry: {
-    client: ['webpack-hot-middleware/client?reload=true&noInfo=true', './src/client/index.tsx'],
+    client: ['@babel/polyfill','webpack-hot-middleware/client?reload=true&noInfo=true', './src/client/index.tsx'],
   },
   devtool: 'inline-cheap-module-source-map',
   devServer: {
@@ -55,7 +55,7 @@ const clientConfig = {
     // you can add additional plugins here like BundleAnalyzerPlugin, Copy Plugin etc.
   ],
   optimization: {
-    runtimeChunk: 'single', // creates a runtime file to be shared for all generated chunks.
+    // runtimeChunk: 'single', // creates a runtime file to be shared for all generated chunks.
     splitChunks: {
       chunks: 'all', // This indicates which chunks will be selected for optimization.
       automaticNameDelimiter: '-',

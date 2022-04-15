@@ -1,3 +1,4 @@
+const { DefinePlugin } = require('webpack');
 const { merge } = require('webpack-merge');
 const baseConfig = require('../webpack.base.js');
 const webpackNodeExternals = require('webpack-node-externals');
@@ -12,7 +13,7 @@ const serverConfig = {
   mode: 'development',
   name: 'server',
   entry: {
-    server: './src/server/index.tsx',
+    server: ['@babel/polyfill','./src/server/index.tsx'],
   },
   resolve: {
     ...baseConfig.resolve,

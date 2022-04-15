@@ -1,41 +1,38 @@
-import React from "react";
-import { renderToString } from "react-dom/server";
-import { StaticRouter } from "react-router-dom";
+import React, {StrictMode} from "react";
+import { renderToPipeableStream } from "react-dom/server";
+import { StaticRouter } from "react-router-dom/server";
 import express from "express";
-import getHtml from "./html/html";
-import path from "path";
 import App from "../client/App/App";
-import { ChunkExtractor, ChunkExtractorManager } from "@loadable/server";
 import { ServerStyleSheet } from "styled-components";
+import Html from "./html/html";
 
-export default (req: express.Request) => {
+export default async (req: express.Request,res: express.Response) => {
   const sheet = new ServerStyleSheet();
-  const loadableJson = path.resolve(__dirname, "./loadable-stats.json");
-
-  const extractor = new ChunkExtractor({
-    statsFile: loadableJson,
-    entrypoints: ["client"],
-  });
-
-  const content = renderToString(
-    sheet.collectStyles(
-      <ChunkExtractorManager extractor={extractor}>
-        <StaticRouter location={req.path} context={{}}>
-          <App />
-        </StaticRouter>
-      </ChunkExtractorManager>
-    )
-  );
 
   const styles = sheet.getStyleTags();
 
-  const htmlData: any = {
-    styles,
-    children: content,
-    extractor,
-  };
 
-  const html = getHtml(htmlData);
-
-  return html;
+  const {pipe, abort} = renderToPipeableStream(
+      <Html styles={styles} children={sheet.collectStyles(
+          <StrictMode>
+              <StaticRouter location={req.url}>
+                  <App />
+              </StaticRouter>
+          </StrictMode>
+      )} />,
+      {
+        onAllReady() {
+          res.statusCode = 200;
+          res.setHeader('Content-type', 'text/html');
+          pipe(res);
+        },
+        onShellError(x) {
+          res.statusCode = 500;
+          res.send(
+              '<!doctype html><p>Loading...</p>'
+          );
+        },
+          bootstrapModules: ['client/vendor.js','client/client.js'],
+      }
+  );
 };

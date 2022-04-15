@@ -20,7 +20,7 @@ src
     index.tsx - configuration for server starting point
     renderer.tsx - set up for the code splitting at the server side
     html
-      html.ts - main html file that serves the root of the project
+      html.tsx - main html file that serves the root of the project
 
 # How to create production build
 
